@@ -1,7 +1,19 @@
+<div class="jump-container">
+  <input 
+    #jumpInput
+    type="number" 
+    (keyup.enter)="jumpToItem(jumpInput.valueAsNumber)"
+    placeholder="Enter item number"
+    min="1"
+    [max]="list.length">
+  <button (click)="jumpToItem(jumpInput.valueAsNumber)">Jump to item</button>
+</div>
+
 <cdk-virtual-scroll-viewport 
   [itemSize]="itemHeight"
   minBufferPx="400"
-  maxBufferPx="800">
+  maxBufferPx="800"
+  #scrollViewport>
   <ul>
     <li *cdkVirtualFor="let item of list">
       {{ item.content }}

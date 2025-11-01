@@ -1,3 +1,37 @@
+.jump-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 1rem;
+  
+  input {
+    width: 200px;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+    background: #16a085;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    
+    &:hover {
+      background: darken(#16a085, 5%);
+    }
+  }
+}
+
 cdk-virtual-scroll-viewport {
   height: 80vh;
   width: 100%;
