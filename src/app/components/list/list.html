@@ -1,3 +1,10 @@
-<ul>
-  <li *ngFor="let item of list">{{ item.content }}</li>
-</ul>
+<cdk-virtual-scroll-viewport 
+  [itemSize]="itemHeight"
+  minBufferPx="400"
+  maxBufferPx="800">
+  <ul>
+    <li *cdkVirtualFor="let item of list">
+      {{ item.content }}
+    </li>
+  </ul>
+</cdk-virtual-scroll-viewport>
