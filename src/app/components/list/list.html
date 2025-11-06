@@ -15,8 +15,8 @@
   maxBufferPx="800"
   #scrollViewport>
   <ul>
-    <li *cdkVirtualFor="let item of list">
-      {{ item.content }}
-    </li>
+    <ng-container *cdkVirtualFor="let item of list">
+      <app-list-item [item]="item"></app-list-item>
+    </ng-container>
   </ul>
 </cdk-virtual-scroll-viewport>

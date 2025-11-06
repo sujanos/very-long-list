@@ -27,7 +27,7 @@
     transition: background 0.2s;
     
     &:hover {
-      background: darken(#16a085, 5%);
+      background: #148e75a5;
     }
   }
 }
@@ -46,23 +46,3 @@ cdk-virtual-scroll-viewport {
   }
 }
 
-li {
-  display: flex;
-  align-items: center;
-  height: 54px;
-  padding: 1rem;
-  box-sizing: border-box;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
-  font-weight: 500;
-  cursor: pointer;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-li:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
