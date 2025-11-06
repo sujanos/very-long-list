@@ -1,11 +1,19 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .jump-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
   margin-bottom: 1rem;
   
   input {
-    width: 200px;
+    width: 226px;
     padding: 0.5rem;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;

@@ -1,13 +1,19 @@
-<div class="jump-container">
-  <input 
-    #jumpInput
-    type="number" 
-    (keyup.enter)="jumpToItem(jumpInput.valueAsNumber)"
-    placeholder="Enter item number"
-    min="1"
-    [max]="list.length">
-  <button (click)="jumpToItem(jumpInput.valueAsNumber)">Jump to item</button>
+<div class="header"> 
+  <div class="jump-container">
+    <input
+      #jumpInput
+      type="number" 
+      (keyup.enter)="jumpToItem(jumpInput.valueAsNumber)"
+      placeholder="Enter item number (1-1,000,000)"
+      min="1"
+      [max]="1000000">
+    <button (click)="jumpToItem(jumpInput.valueAsNumber)">Jump to item</button>
+  </div>
+  <div class="chunk-info" *ngIf="currentChunk">
+    Showing items {{currentChunk.startIndex + 1}} to {{currentChunk.endIndex + 1}} of 1,000,000
+  </div>
 </div>
+
 
 <cdk-virtual-scroll-viewport 
   [itemSize]="itemHeight"
@@ -15,7 +21,7 @@
   maxBufferPx="800"
   #scrollViewport>
   <ul>
-    <ng-container *cdkVirtualFor="let item of list">
+    <ng-container *cdkVirtualFor="let item of items$ | async">
       <app-list-item [item]="item"></app-list-item>
     </ng-container>
   </ul>
