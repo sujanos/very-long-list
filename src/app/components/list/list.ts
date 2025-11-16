@@ -25,12 +25,18 @@ export class List implements OnDestroy {
   private readonly CHUNK_SIZE = 1000;
   private readonly CHUNK_BUFFER = 500;
   private destroy$ = new Subject<void>();
+  private allItems: ListItemData[] = [];
   currentChunk: Chunk | null = null;
   
   items$ = new BehaviorSubject<ListItemData[]>([]);
   itemHeight = 55;
   
   constructor() {
+    this.allItems = Array.from({ length: this.TOTAL_ITEMS }, (_, i) => ({
+      id: i + 1,
+      content: this.generateRandomLengthText()
+    }));
+
     this.loadChunk(0);
   }
   
@@ -55,16 +61,10 @@ export class List implements OnDestroy {
   }
   
   private loadChunk(centerIndex: number): void {
-    let startIndex = Math.max(0, centerIndex - this.CHUNK_BUFFER);
-    let endIndex = Math.min(this.TOTAL_ITEMS - 1, centerIndex + this.CHUNK_BUFFER);
+    const startIndex = Math.max(0, centerIndex - this.CHUNK_BUFFER);
+    const endIndex = Math.min(this.TOTAL_ITEMS - 1, centerIndex + this.CHUNK_BUFFER);
     
-    const chunkItems = Array.from(
-      { length: endIndex - startIndex + 1 },
-      (_, i) => ({
-        id: startIndex + i + 1,
-        content: this.generateRandomLengthText(),
-      })
-    );
+    const chunkItems = this.allItems.slice(startIndex, endIndex + 1);
     
     this.currentChunk = {
       startIndex,
@@ -89,7 +89,7 @@ export class List implements OnDestroy {
 
   private generateRandomLengthText(): string {
     const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
-    // return loremIpsum.slice(0, Math.floor(Math.random() * loremIpsum.length));
-    return loremIpsum.slice(0, 100);
+    return loremIpsum.slice(0, Math.floor(Math.random() * loremIpsum.length));
+    // return loremIpsum.slice(0, 100);
   }
 }
