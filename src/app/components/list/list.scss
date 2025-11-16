@@ -11,7 +11,7 @@
   justify-content: center;
   gap: 10px;
   margin-bottom: 1rem;
-  
+
   input {
     width: 226px;
     padding: 0.5rem;
@@ -19,12 +19,12 @@
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    
+
     &::placeholder {
       color: rgba(255, 255, 255, 0.5);
     }
   }
-  
+
   button {
     padding: 0.5rem 1rem;
     background: #16a085;
@@ -33,7 +33,7 @@
     color: white;
     cursor: pointer;
     transition: background 0.2s;
-    
+
     &:hover {
       background: #148e75a5;
     }
@@ -46,11 +46,10 @@ cdk-virtual-scroll-viewport {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  
+
   ul {
     padding: 0;
     margin: 0;
     list-style: none;
   }
 }
-

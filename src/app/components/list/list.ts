@@ -20,26 +20,26 @@ interface Chunk {
 })
 export class List implements OnDestroy {
   @ViewChild('scrollViewport') scrollViewport!: CdkVirtualScrollViewport;
-  
+
   private readonly TOTAL_ITEMS = 1_000_000;
   private readonly CHUNK_SIZE = 1000;
   private readonly CHUNK_BUFFER = 500;
   private destroy$ = new Subject<void>();
   private allItems: ListItemData[] = [];
   currentChunk: Chunk | null = null;
-  
+
   items$ = new BehaviorSubject<ListItemData[]>([]);
   itemHeight = 55;
-  
+
   constructor() {
     this.allItems = Array.from({ length: this.TOTAL_ITEMS }, (_, i) => ({
       id: i + 1,
-      content: this.generateRandomLengthText()
+      content: this.generateRandomLengthText(),
     }));
 
     this.loadChunk(0);
   }
-  
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
@@ -47,40 +47,42 @@ export class List implements OnDestroy {
 
   jumpToItem(itemNumber: number): void {
     if (itemNumber < 1 || itemNumber > this.TOTAL_ITEMS) return;
-    
+
     const targetIndex = itemNumber - 1;
-    
-    if (this.currentChunk && 
-        targetIndex >= this.currentChunk.startIndex && 
-        targetIndex <= this.currentChunk.endIndex) {
+
+    if (
+      this.currentChunk &&
+      targetIndex >= this.currentChunk.startIndex &&
+      targetIndex <= this.currentChunk.endIndex
+    ) {
       this.scrollToIndex(targetIndex);
       return;
     }
-    
+
     this.loadChunk(targetIndex);
   }
-  
+
   private loadChunk(centerIndex: number): void {
     const startIndex = Math.max(0, centerIndex - this.CHUNK_BUFFER);
     const endIndex = Math.min(this.TOTAL_ITEMS - 1, centerIndex + this.CHUNK_BUFFER);
-    
+
     const chunkItems = this.allItems.slice(startIndex, endIndex + 1);
-    
+
     this.currentChunk = {
       startIndex,
       endIndex,
-      items: chunkItems
+      items: chunkItems,
     };
-    
+
     this.items$.next(chunkItems);
-    
+
     setTimeout(() => {
       if (centerIndex >= startIndex && centerIndex <= endIndex) {
         this.scrollToIndex(centerIndex - startIndex);
       }
     });
   }
-  
+
   private scrollToIndex(index: number): void {
     if (this.scrollViewport) {
       this.scrollViewport.scrollToIndex(index, 'auto');
