@@ -1,8 +1,19 @@
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  OnDestroy,
+  ElementRef,
+  ViewChildren,
+  QueryList,
+  effect,
+  viewChild,
+  viewChildren,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ScrollingModule, CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { injectVirtualizer } from '@tanstack/angular-virtual';
+import { Subject } from 'rxjs';
 import { ListItem, type ListItemData } from '../list-item/list-item';
 
 interface Chunk {
@@ -14,30 +25,39 @@ interface Chunk {
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ScrollingModule, ListItem],
+  imports: [CommonModule, FormsModule, ListItem],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })
 export class List implements OnDestroy {
-  @ViewChild('scrollViewport') scrollViewport!: CdkVirtualScrollViewport;
+  scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement');
+  virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem');
 
-  private readonly TOTAL_ITEMS = 1_000_000;
-  private readonly CHUNK_SIZE = 1000;
-  private readonly CHUNK_BUFFER = 500;
+  readonly TOTAL_ITEMS = 600_000;
+  readonly ESTIMATED_ITEM_HEIGHT = 64;
   private destroy$ = new Subject<void>();
-  private allItems: ListItemData[] = [];
-  currentChunk: Chunk | null = null;
+  allItems = signal<ListItemData[]>([]);
 
-  items$ = new BehaviorSubject<ListItemData[]>([]);
-  itemHeight = 55;
+  #measureItems = effect(() =>
+    this.virtualItems().forEach((el) => {
+      this.virtualizer.measureElement(el.nativeElement);
+    }),
+  );
+
+  virtualizer = injectVirtualizer(() => ({
+    scrollElement: this.scrollElement(),
+    count: this.TOTAL_ITEMS,
+    estimateSize: () => this.ESTIMATED_ITEM_HEIGHT,
+    overscan: 2,
+  }));
 
   constructor() {
-    this.allItems = Array.from({ length: this.TOTAL_ITEMS }, (_, i) => ({
-      id: i + 1,
-      content: this.generateRandomLengthText(),
-    }));
-
-    this.loadChunk(0);
+    this.allItems.set(
+      Array.from({ length: this.TOTAL_ITEMS }, (_, i) => ({
+        id: i + 1,
+        content: this.generateRandomLengthText(),
+      })),
+    );
   }
 
   ngOnDestroy() {
@@ -45,47 +65,9 @@ export class List implements OnDestroy {
     this.destroy$.complete();
   }
 
-  jumpToItem(itemNumber: number): void {
-    if (itemNumber < 1 || itemNumber > this.TOTAL_ITEMS) return;
-
-    const targetIndex = itemNumber - 1;
-
-    if (
-      this.currentChunk &&
-      targetIndex >= this.currentChunk.startIndex &&
-      targetIndex <= this.currentChunk.endIndex
-    ) {
-      this.scrollToIndex(targetIndex);
-      return;
-    }
-
-    this.loadChunk(targetIndex);
-  }
-
-  private loadChunk(centerIndex: number): void {
-    const startIndex = Math.max(0, centerIndex - this.CHUNK_BUFFER);
-    const endIndex = Math.min(this.TOTAL_ITEMS - 1, centerIndex + this.CHUNK_BUFFER);
-
-    const chunkItems = this.allItems.slice(startIndex, endIndex + 1);
-
-    this.currentChunk = {
-      startIndex,
-      endIndex,
-      items: chunkItems,
-    };
-
-    this.items$.next(chunkItems);
-
-    setTimeout(() => {
-      if (centerIndex >= startIndex && centerIndex <= endIndex) {
-        this.scrollToIndex(centerIndex - startIndex);
-      }
-    });
-  }
-
-  private scrollToIndex(index: number): void {
-    if (this.scrollViewport) {
-      this.scrollViewport.scrollToIndex(index, 'auto');
+  jumpToItem(itemNumber: number) {
+    if (itemNumber >= 1 && itemNumber <= this.TOTAL_ITEMS) {
+      this.virtualizer.scrollToIndex(itemNumber - 1, { align: 'start' });
     }
   }
 

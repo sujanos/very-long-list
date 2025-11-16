@@ -1,4 +1,5 @@
 <div class="header">
+  <h2>Very Long List</h2>
   <div class="jump-container">
     <input
       #jumpInput
@@ -10,20 +11,19 @@
     />
     <button (click)="jumpToItem(jumpInput.valueAsNumber)">Jump to item</button>
   </div>
-  <div class="chunk-info" *ngIf="currentChunk">
-    Showing items {{ currentChunk.startIndex + 1 }} to {{ currentChunk.endIndex + 1 }} of 1,000,000
-  </div>
 </div>
 
-<cdk-virtual-scroll-viewport
-  [itemSize]="itemHeight"
-  minBufferPx="400"
-  maxBufferPx="800"
-  #scrollViewport
->
-  <ul>
-    <ng-container *cdkVirtualFor="let item of items$ | async">
-      <app-list-item [item]="item"></app-list-item>
-    </ng-container>
-  </ul>
-</cdk-virtual-scroll-viewport>
+<div #scrollElement class="list scroll-element">
+  <div style="position: relative; width: 100%" [style.height.px]="virtualizer.getTotalSize()">
+    <div
+      style="position: absolute; top: 0; left: 0; width: 100%"
+      [style.transform]="'translateY(' + (virtualizer.getVirtualItems()[0]?.start || 0) + 'px)'"
+    >
+      @for (virtualRow of virtualizer.getVirtualItems(); track virtualRow.index) {
+        <div #virtualItem [attr.data-index]="virtualRow.index">
+          <app-list-item [item]="allItems()[virtualRow.index]"></app-list-item>
+        </div>
+      }
+    </div>
+  </div>
+</div>

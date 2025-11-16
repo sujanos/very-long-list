@@ -40,16 +40,13 @@
   }
 }
 
-cdk-virtual-scroll-viewport {
+.scroll-element {
+  overflow-y: auto;
+  contain: 'strict';
+
   height: 80vh;
   width: 100%;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
 }
