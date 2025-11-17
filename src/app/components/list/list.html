@@ -7,7 +7,7 @@
       (keyup.enter)="jumpToItem(jumpInput.valueAsNumber)"
       placeholder="Enter item number (1-1,000,000)"
       min="1"
-      [max]="1000000"
+      [max]="TOTAL_ITEMS"
     />
     <button (click)="jumpToItem(jumpInput.valueAsNumber)">Jump to item</button>
   </div>

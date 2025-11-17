@@ -10,41 +10,35 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { Subject, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { OverlayscrollbarsModule, OverlayScrollbarsDirective } from 'overlayscrollbars-ngx';
 import { ListItem, type ListItemData } from '../list-item/list-item';
 
-interface Chunk {
-  startIndex: number;
-  endIndex: number;
-  items: ListItemData[];
-}
-
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ListItem, OverlayscrollbarsModule],
+  imports: [CommonModule, ListItem, OverlayscrollbarsModule],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })
 export class List implements AfterViewInit, OnDestroy {
-  scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement');
-  virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem');
-  overlayScrollbarsDirective = viewChild(OverlayScrollbarsDirective);
+  private scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement');
+  private virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem');
+  private overlayScrollbarsDirective = viewChild(OverlayScrollbarsDirective);
   private overlayViewport = signal<HTMLElement | null>(null);
 
   readonly TOTAL_ITEMS = 1_000_000;
   readonly ESTIMATED_ITEM_HEIGHT = 64;
   readonly SEGMENT_SIZE = 50_000;
   readonly SEGMENT_SCROLL_THRESHOLD_PX = 512;
-  private destroy$ = new Subject<void>();
+
+  private readonly destroy$ = new Subject<void>();
   allItems = signal<ListItemData[]>([]);
   segmentStartIndex = signal(0);
   private pendingScrollAdjustment: number | null = null;
-  private itemHeights!: Float32Array;
+  private itemHeights: Float32Array;
   private currentSegmentCount = computed(() =>
     Math.min(this.SEGMENT_SIZE, Math.max(0, this.TOTAL_ITEMS - this.segmentStartIndex())),
   );
