@@ -9,11 +9,13 @@ import {
   viewChild,
   viewChildren,
   signal,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { injectVirtualizer } from '@tanstack/angular-virtual';
 import { Subject } from 'rxjs';
+import { OverlayscrollbarsModule, OverlayScrollbarsDirective } from 'overlayscrollbars-ngx';
 import { ListItem, type ListItemData } from '../list-item/list-item';
 
 interface Chunk {
@@ -25,13 +27,15 @@ interface Chunk {
 @Component({
   selector: 'app-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, ListItem],
+  imports: [CommonModule, FormsModule, ListItem, OverlayscrollbarsModule],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })
-export class List implements OnDestroy {
+export class List implements AfterViewInit, OnDestroy {
   scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement');
   virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem');
+  overlayScrollbarsDirective = viewChild(OverlayScrollbarsDirective);
+  private overlayViewport = signal<Element | null>(null);
 
   readonly TOTAL_ITEMS = 600_000;
   readonly ESTIMATED_ITEM_HEIGHT = 64;
@@ -45,7 +49,7 @@ export class List implements OnDestroy {
   );
 
   virtualizer = injectVirtualizer(() => ({
-    scrollElement: this.scrollElement(),
+    scrollElement: this.overlayViewport() ?? this.scrollElement(),
     count: this.TOTAL_ITEMS,
     estimateSize: () => this.ESTIMATED_ITEM_HEIGHT,
     overscan: 2,
@@ -58,6 +62,20 @@ export class List implements OnDestroy {
         content: this.generateRandomLengthText(),
       })),
     );
+  }
+
+  ngAfterViewInit() {
+    const directive = this.overlayScrollbarsDirective();
+    const scrollElement = this.scrollElement()?.nativeElement;
+
+    if (directive && scrollElement) {
+      directive.osInitialize(scrollElement);
+
+      const viewport = directive.osInstance()?.elements().viewport;
+      if (viewport) {
+        this.overlayViewport.set(viewport);
+      }
+    }
   }
 
   ngOnDestroy() {

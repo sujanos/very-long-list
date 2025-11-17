@@ -13,7 +13,23 @@
   </div>
 </div>
 
-<div #scrollElement class="list scroll-element">
+<div
+  #scrollElement
+  class="list scroll-element"
+  overlayScrollbars
+  [options]="{
+    scrollbars: {
+      theme: 'os-theme-very-long-list',
+      autoHide: 'leave',
+      autoHideDelay: 100,
+      clickScroll: true,
+    },
+    overflow: {
+      x: 'hidden',
+      y: 'scroll',
+    },
+  }"
+>
   <div style="position: relative; width: 100%" [style.height.px]="virtualizer.getTotalSize()">
     <div
       style="position: absolute; top: 0; left: 0; width: 100%"

@@ -1,5 +1,44 @@
+@use 'overlayscrollbars/styles/overlayscrollbars.css';
+
+/* OverlayScrollbars variables */
+:root {
+  --os-size: 10px;
+  --os-padding-perpendicular: 2px;
+  --os-padding-axis: 2px;
+  --os-border-radius: 12px;
+  --os-track-border-radius: 999px;
+}
+
+.os-theme-very-long-list {
+  --os-size: 12px;
+  --os-padding-perpendicular: 3px;
+  --os-padding-axis: 3px;
+  --os-border-radius: 999px;
+  --os-track-border-radius: 999px;
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: rgba(22, 160, 133, 0.55);
+  --os-handle-bg-hover: rgba(22, 160, 133, 0.8);
+  --os-handle-bg-active: #16a085;
+}
+
+.os-theme-very-long-list .os-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--os-track-border-radius);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.os-theme-very-long-list .os-scrollbar-track:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.os-theme-very-long-list .os-scrollbar-handle {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Base styles */
 body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
