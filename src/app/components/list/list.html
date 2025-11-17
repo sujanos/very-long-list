@@ -35,9 +35,14 @@
       style="position: absolute; top: 0; left: 0; width: 100%"
       [style.transform]="'translateY(' + (virtualizer.getVirtualItems()[0]?.start || 0) + 'px)'"
     >
-      @for (virtualRow of virtualizer.getVirtualItems(); track virtualRow.index) {
-        <div #virtualItem [attr.data-index]="virtualRow.index">
-          <app-list-item [item]="allItems()[virtualRow.index]"></app-list-item>
+      @for (
+        virtualRow of virtualizer.getVirtualItems();
+        track segmentStartIndex() + virtualRow.index
+      ) {
+        <div #virtualItem [attr.data-index]="segmentStartIndex() + virtualRow.index">
+          <app-list-item
+            [item]="allItems()[segmentStartIndex() + virtualRow.index]"
+          ></app-list-item>
         </div>
       }
     </div>
