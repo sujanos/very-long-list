@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 import { List } from './list';
 
@@ -26,9 +26,6 @@ describe('List', () => {
       measureElement: () => {},
     };
     component.virtualizer = virtualizerStub as unknown as List['virtualizer'];
-    fixture.detectChanges();
-
-    spyOn(component as any, 'scheduleVirtualizerSync').and.callFake((task: () => void) => task());
   });
 
   it('should create', () => {
@@ -44,32 +41,44 @@ describe('List', () => {
   });
 
   describe('jumpToItem', () => {
-    it('should ignore non-finite or out-of-range inputs', () => {
-      const initialStart = component.segmentStartIndex();
+    it('should ignore non-finite or out-of-range inputs', fakeAsync(() => {
+      const initialStart = component.getGlobalIndex(0);
 
       component.jumpToItem(Number.NaN);
       component.jumpToItem(0);
       component.jumpToItem(component.TOTAL_ITEMS + 1);
 
-      expect(component.segmentStartIndex()).toBe(initialStart);
+      flushMicrotasks();
+
+      expect(component.getGlobalIndex(0)).toBe(initialStart);
       expect(virtualizerStub.scrollToIndex).not.toHaveBeenCalled();
-    });
+    }));
 
-    it('should move to the containing segment and scroll relative to it', () => {
-      component.jumpToItem(75_001);
+    it('should move to the containing segment and scroll relative to it', fakeAsync(() => {
+      const targetItem = 200_000;
+      const expectedStart = component.ITEMS_PER_SEGMENT;
+      const expectedLocalIndex = targetItem - 1 - expectedStart;
 
-      expect(component.segmentStartIndex()).toBe(50_000);
-      expect(virtualizerStub.scrollToIndex).toHaveBeenCalledWith(25_000, { align: 'start' });
-    });
+      component.jumpToItem(targetItem);
+      flushMicrotasks();
 
-    it('should jump to the final segment near the end of the list', () => {
-      component.jumpToItem(component.TOTAL_ITEMS);
-
-      const expectedStart = component.TOTAL_ITEMS - component.SEGMENT_SIZE;
-      expect(component.segmentStartIndex()).toBe(expectedStart);
-      expect(virtualizerStub.scrollToIndex).toHaveBeenCalledWith(component.SEGMENT_SIZE - 1, {
+      expect(component.getGlobalIndex(0)).toBe(expectedStart);
+      expect(virtualizerStub.scrollToIndex).toHaveBeenCalledWith(expectedLocalIndex, {
         align: 'start',
       });
-    });
+    }));
+
+    it('should jump to the final segment near the end of the list', fakeAsync(() => {
+      const expectedStart = component.TOTAL_ITEMS - component.ITEMS_PER_SEGMENT;
+      const expectedLocalIndex = component.ITEMS_PER_SEGMENT - 1;
+
+      component.jumpToItem(component.TOTAL_ITEMS);
+      flushMicrotasks();
+
+      expect(component.getGlobalIndex(0)).toBe(expectedStart);
+      expect(virtualizerStub.scrollToIndex).toHaveBeenCalledWith(expectedLocalIndex, {
+        align: 'start',
+      });
+    }));
   });
 });
