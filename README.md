@@ -1,6 +1,6 @@
 # Very Long List
 
-An Angular demo that renders one million list items with by utilizing TanStack Virtual and OverlayScrollbars.
+An Angular demo that renders one million list items by utilizing TanStack Virtual and OverlayScrollbars.
 
 ## Quick start
 
@@ -19,5 +19,5 @@ npm start   # serves at http://localhost:4200
 ## Tech stack
 
 - Angular standalone components and Signals
-- TanStack Angular Virtual for windowed rendering
+- TanStack Angular Virtual for virtual scrolling
 - OverlayScrollbars for customized scrollbar
